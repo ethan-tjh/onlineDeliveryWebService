@@ -42,11 +42,13 @@ app.post('/addDeliveries', async (req, res) => {
 });
 app.post('/updateDeliveries/:id', async (req, res) => {
     const {id} = req.params;
-    const {fullname, delivery_status} = req.body;
+    const {delivery_status} = req.body;
     try {
         let connection = await mysql.createConnection(dbConfig);
-        await connection.execute('UPDATE deliveries SET delivery_status WHERE id = ?', [id, delivery_status, fullname]);
-        res.status(200).json({message: 'Delivery for ' + fullname + 'was updated successfully'});
+        const [rows] = await connection.execute('SELECT fullname FROM deliveries WHERE id = ?', [id]);
+        const fullname = rows[0].fullname;
+        await connection.execute('UPDATE deliveries SET delivery_status = ? WHERE id = ?', [delivery_status, id]);
+        res.status(200).json({message: 'Delivery for ' + fullname + ' was updated successfully'});
     } catch (err) {
         console.error(err);
         res.status(500).json({message: 'Server error - could not update Delivery for ' + fullname});
@@ -54,9 +56,10 @@ app.post('/updateDeliveries/:id', async (req, res) => {
 });
 app.post('/deleteDeliveries/:id', async (req, res) => {
     const {id} = req.params;
-    const {fullname} = req.body;
     try {
         let connection = await mysql.createConnection(dbConfig);
+        const [rows] = await connection.execute('SELECT fullname FROM deliveries WHERE id = ?', [id]);
+        const fullname = rows[0].fullname;
         await connection.execute('DELETE FROM deliveries WHERE id = ?', [id]);
         res.status(200).json({message: 'Delivery for ' + fullname + ' has been deleted'});
     } catch (err) {
