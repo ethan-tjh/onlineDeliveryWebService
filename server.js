@@ -53,8 +53,8 @@ app.post('/updateDeliveries', async (req, res) => {
         res.status(500).json({message: 'Server error - could not update Delivery for ' + fullname});
     }
 });
-app.post('/deleteDeliveries/:id', async (req, res) => {
-    const {id} = req.params;
+app.post('/deleteDeliveries', async (req, res) => {
+    const {id} = req.body;
     try {
         let connection = await mysql.createConnection(dbConfig);
         const [rows] = await connection.execute('SELECT fullname FROM deliveries WHERE id = ?', [id]);

@@ -1,7 +1,7 @@
 Web Service Primary URL:
 https://onlinedeliverywebservice.onrender.com/
 
-Retrieve all Deliveries:
+Retrieve all deliveries:
 https://onlinedeliverywebservice.onrender.com/allDeliveries
 
 To add new delivery:
@@ -15,3 +15,15 @@ https://onlinedeliverywebservice.onrender.com/addDeliveries
 
 To update delivery status:
 https://onlinedeliverywebservice.onrender.com/updateDeliveries
+
+{
+"id": "5",
+"delivery_status": "Shipped"
+}
+
+To delete delivery using POST:
+https://onlinedeliverywebservice.onrender.com/deleteDeliveries
+
+{
+"id": "5"
+}
