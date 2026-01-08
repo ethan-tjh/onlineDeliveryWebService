@@ -40,3 +40,5 @@ app.post('/addDeliveries', async (req, res) => {
         res.status(500).json({message: 'Server error - could not add Delivery for ' + fullname});
     }
 });
+app.post('/updateDeliveries', async (req, res) => {
+});
