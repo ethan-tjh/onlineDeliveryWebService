@@ -40,9 +40,8 @@ app.post('/addDeliveries', async (req, res) => {
         res.status(500).json({message: 'Server error - could not add Delivery for ' + fullname});
     }
 });
-app.post('/updateDeliveries/:id', async (req, res) => {
-    const {id} = req.params;
-    const {delivery_status} = req.body;
+app.post('/updateDeliveries', async (req, res) => {
+    const {id, delivery_status} = req.body;
     try {
         let connection = await mysql.createConnection(dbConfig);
         const [rows] = await connection.execute('SELECT fullname FROM deliveries WHERE id = ?', [id]);
