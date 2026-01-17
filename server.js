@@ -30,10 +30,10 @@ app.get('/allDeliveries', async (req, res) => {
 });
 // POST
 app.post('/addDeliveries', async (req, res) => {
-    const {fullname, phone_num, delivery_status} = req.body;
+    const {fullname, phone_num, delivery_status, product_name, product_image} = req.body;
     try {
         let connection = await mysql.createConnection(dbConfig);
-        await connection.execute('INSERT INTO deliveries (fullname, phone_num, delivery_status) VALUES (?, ?, ?)', [fullname, phone_num, delivery_status]);
+        await connection.execute('INSERT INTO deliveries (fullname, phone_num, delivery_status, product_name, product_image) VALUES (?, ?, ?, ?, ?)', [fullname, phone_num, delivery_status, product_name, product_image]);
         res.status(201).json({message: 'Delivery for ' + fullname + ' has been added successfully'});
     } catch (err) {
         console.error(err);
