@@ -30,7 +30,16 @@ app.get('/allDeliveries', async (req, res) => {
 });
 // POST
 app.post('/addDeliveries', async (req, res) => {
-    const {fullname, phone_num, delivery_status, product_name, product_image} = req.body;
+    const {
+        fullname,
+        phone_num = '',
+        delivery_status = '',
+        product_name = '',
+        product_image = ''
+    } = req.body;
+    if (!fullname) {
+        return res.status(400).json({message: 'Customer name is required'});
+    }
     try {
         let connection = await mysql.createConnection(dbConfig);
         await connection.execute('INSERT INTO deliveries (fullname, phone_num, delivery_status, product_name, product_image) VALUES (?, ?, ?, ?, ?)', [fullname, phone_num, delivery_status, product_name, product_image]);
@@ -41,16 +50,49 @@ app.post('/addDeliveries', async (req, res) => {
     }
 });
 app.post('/updateDeliveries', async (req, res) => {
-    const {id, delivery_status} = req.body;
+    const {id, fullname, phone_num, delivery_status, product_name, product_image} = req.body;
+    if (!id) {
+        return res.status(400).json({message: 'Id must be provided'});
+    }
+    const updates = [];
+    const values = [];
+    if (fullname!==undefined) {
+        updates.push('fullname = ?');
+        values.push(fullname);
+    }
+    if (phone_num!==undefined) {
+        updates.push('phone_num = ?');
+        values.push(phone_num);
+    }
+    if (delivery_status!==undefined) {
+        updates.push('delivery_status = ?');
+        values.push(delivery_status);
+    }
+    if (product_name!==undefined) {
+        updates.push('product_name = ?');
+        values.push(product_name);
+    }
+    if (product_image!==undefined) {
+        updates.push('product_image = ?');
+        values.push(product_image);
+    }
+    if (updates.length===0) {
+        return res.status(400).json({message: 'No updates were found'});
+    }
     try {
         let connection = await mysql.createConnection(dbConfig);
         const [rows] = await connection.execute('SELECT fullname FROM deliveries WHERE id = ?', [id]);
-        const fullname = rows[0].fullname;
-        await connection.execute('UPDATE deliveries SET delivery_status = ? WHERE id = ?', [delivery_status, id]);
-        res.status(200).json({message: 'Delivery for ' + fullname + ' was updated successfully'});
+        if (rows.length === 0) {
+            return res.status(404).json({message: 'Delivery not found'});
+        }
+        const displayName = fullname || rows[0].fullname;
+        values.push(id);
+        const sql = `UPDATE deliveries SET ${updates.join(', ')} WHERE id = ?`;
+        await connection.execute(sql, values);
+        res.status(200).json({message: 'Delivery for ' + displayName + ' was updated successfully'});
     } catch (err) {
         console.error(err);
-        res.status(500).json({message: 'Server error - could not update Delivery for ' + fullname});
+        res.status(500).json({message: 'Server error - could not update Delivery for ' + displayName});
     }
 });
 app.post('/deleteDeliveries', async (req, res) => {
