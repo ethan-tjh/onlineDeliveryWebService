@@ -49,8 +49,9 @@ app.post('/addDeliveries', async (req, res) => {
         res.status(500).json({message: 'Server error - could not add Delivery for ' + fullname});
     }
 });
-app.post('/updateDeliveries', async (req, res) => {
-    const {id, fullname, phone_num, delivery_status, product_name, product_image} = req.body;
+app.put('/updateDeliveries/:id', async (req, res) => {
+    const {id} = req.params;
+    const {fullname, phone_num, delivery_status, product_name, product_image} = req.body;
     if (!id) {
         return res.status(400).json({message: 'Id must be provided'});
     }
@@ -92,11 +93,11 @@ app.post('/updateDeliveries', async (req, res) => {
         res.status(200).json({message: 'Delivery for ' + displayName + ' was updated successfully'});
     } catch (err) {
         console.error(err);
-        res.status(500).json({message: 'Server error - could not update Delivery for ' + displayName});
+        res.status(500).json({message: 'Server error - could not update Delivery'});
     }
 });
-app.post('/deleteDeliveries', async (req, res) => {
-    const {id} = req.body;
+app.delete('/deleteDeliveries/:id', async (req, res) => {
+    const {id} = req.params;
     try {
         let connection = await mysql.createConnection(dbConfig);
         const [rows] = await connection.execute('SELECT fullname FROM deliveries WHERE id = ?', [id]);
@@ -105,6 +106,6 @@ app.post('/deleteDeliveries', async (req, res) => {
         res.status(200).json({message: 'Delivery for ' + fullname + ' has been deleted'});
     } catch (err) {
         console.error(err);
-        res.status(500).json({message: 'Server error - could not delete Delivery for ' + fullname});
+        res.status(500).json({message: 'Server error - could not delete Delivery'});
     }
 });
